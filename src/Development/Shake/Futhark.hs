@@ -36,7 +36,9 @@ extractFromDecBase (ImportDec fp _ _)             = [fp]
 extractFromDecBase (LocalDec d _)                 = extractFromDecBase d
 extractFromDecBase (OpenDec d _)                  = extractFromModExpBase d
 extractFromDecBase (ModDec (ModBind _ _ _ m _ _)) = extractFromModExpBase m
-extractFromDecBase _                              = []
+extractFromDecBase ValDec{}                       = []
+extractFromDecBase TypeDec{}                      = []
+extractFromDecBase SigDec{}                       = []
 
 extractFromModExpBase :: ModExpBase f vn -> [FilePath]
 extractFromModExpBase (ModParens m _)       = extractFromModExpBase m
