@@ -30,6 +30,7 @@ library
         futhark >=0.15,
         shake -any,
         text -any,
+        filepath,
         containers >=0.6
 
     if impl(ghc >=8.0)

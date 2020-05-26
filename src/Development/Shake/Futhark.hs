@@ -9,6 +9,7 @@ import qualified Data.Text.IO              as TIO
 import           Development.Shake         (Action, need)
 import           Language.Futhark.Parser   (parseFuthark)
 import           Language.Futhark.Syntax   (DecBase (..), ModBindBase (ModBind), ModExpBase (..), ProgBase (Prog))
+import           System.FilePath           (takeDirectory, (<.>), (</>))
 
 needFut :: [FilePath] -> Action ()
 needFut fps =
@@ -17,8 +18,9 @@ needFut fps =
 getFutDeps :: FilePath -> IO [FilePath]
 getFutDeps fp = do
     contents <- TIO.readFile fp
-    let parsed = either (error.show) id $ parseFuthark fp contents
-    pure (extractFromProgBase parsed)
+    let dirFile = takeDirectory fp
+        parsed = either (error.show) id $ parseFuthark fp contents
+    pure ((dirFile </>) . (<.> "fut") <$> extractFromProgBase parsed)
 
 -- | Get all transitive dependencies
 getAllFutDeps :: FilePath -> IO [FilePath]
