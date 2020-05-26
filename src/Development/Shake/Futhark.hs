@@ -11,6 +11,7 @@ import           Language.Futhark.Parser   (parseFuthark)
 import           Language.Futhark.Syntax   (DecBase (..), ModBindBase (ModBind), ModExpBase (..), ProgBase (Prog))
 import           System.FilePath           (takeDirectory, (<.>), (</>))
 
+-- | @'need'@ a file and all its dependencies
 needFut :: [FilePath] -> Action ()
 needFut fps =
     need =<< liftIO (mconcat . (fps :) <$> traverse getAllFutDeps fps)
