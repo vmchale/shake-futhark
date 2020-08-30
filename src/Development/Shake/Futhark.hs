@@ -27,8 +27,8 @@ getFutDeps fp = do
 getAllFutDeps :: FilePath -> IO [FilePath]
 getAllFutDeps fp = do
     deps <- getFutDeps fp
-    level <- traverse getFutDeps deps
-    let next = nubOrd (mconcat (deps : level))
+    level <- traverse getAllFutDeps deps
+    let next = nubOrd (concat (deps : level))
     pure $ if null level then deps else next
 
 extractFromProgBase :: ProgBase f vn -> [FilePath]
