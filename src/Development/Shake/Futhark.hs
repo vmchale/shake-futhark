@@ -3,12 +3,14 @@ module Development.Shake.Futhark ( getFutDeps
                                  , needFut
                                  ) where
 
+import           Control.Monad             ((<=<))
 import           Control.Monad.IO.Class    (liftIO)
 import           Data.Containers.ListUtils (nubOrd)
 import qualified Data.Text.IO              as TIO
 import           Development.Shake         (Action, need)
 import           Language.Futhark.Parser   (parseFuthark)
 import           Language.Futhark.Syntax   (DecBase (..), ModBindBase (ModBind), ModExpBase (..), ProgBase (Prog))
+import           System.Directory          (canonicalizePath, makeRelativeToCurrentDirectory)
 import           System.FilePath           (takeDirectory, (<.>), (</>))
 
 -- | @'need'@ a file and all its dependencies
@@ -17,7 +19,7 @@ needFut fps =
     need =<< liftIO (mconcat . (fps :) <$> traverse getAllFutDeps fps)
 
 getFutDeps :: FilePath -> IO [FilePath]
-getFutDeps fp = do
+getFutDeps fp = traverse canonicalizeRelative =<< do
     contents <- TIO.readFile fp
     let dirFile = takeDirectory fp
         parsed = either (error.show) id $ parseFuthark fp contents
@@ -30,6 +32,9 @@ getAllFutDeps fp = do
     level <- traverse getAllFutDeps deps
     let next = nubOrd (concat (deps : level))
     pure $ if null level then deps else next
+
+canonicalizeRelative :: FilePath -> IO FilePath
+canonicalizeRelative = makeRelativeToCurrentDirectory <=< canonicalizePath
 
 extractFromProgBase :: ProgBase f vn -> [FilePath]
 extractFromProgBase (Prog _ ds) = concatMap extractFromDecBase ds
