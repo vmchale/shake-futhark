@@ -4,7 +4,6 @@ module Development.Shake.Futhark ( getFutDeps
                                  ) where
 
 import           Control.Monad             ((<=<))
-import           Control.Monad.IO.Class    (liftIO)
 import           Data.Containers.ListUtils (nubOrd)
 import           Data.Foldable             (traverse_)
 import qualified Data.Text.IO              as TIO
