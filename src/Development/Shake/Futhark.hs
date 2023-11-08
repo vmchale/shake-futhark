@@ -6,10 +6,11 @@ module Development.Shake.Futhark ( getFutDeps
 import           Control.Monad             ((<=<))
 import           Data.Containers.ListUtils (nubOrd)
 import           Data.Foldable             (traverse_)
+import qualified Data.Text                 as T
 import qualified Data.Text.IO              as TIO
 import           Development.Shake         (Action, need, traced)
-import           Language.Futhark.Parser   (parseFuthark)
-import           Language.Futhark.Syntax   (DecBase (..), ModBindBase (ModBind), ModExpBase (..), ProgBase (Prog))
+import           Language.Futhark.Parser   (SyntaxError (..), parseFuthark)
+import           Language.Futhark.Syntax   (DecBase (..), ModBindBase (ModBind), ModExpBase (..), ProgBase (Prog), locStr)
 import           System.Directory          (canonicalizePath, makeRelativeToCurrentDirectory)
 import           System.FilePath           (takeDirectory, (<.>), (</>))
 
@@ -24,8 +25,9 @@ getFutDeps :: FilePath -> IO [FilePath]
 getFutDeps fp = traverse canonicalizeRelative =<< do
     contents <- TIO.readFile fp
     let dirFile = takeDirectory fp
-        parsed = either (error.show) id $ parseFuthark fp contents
+        parsed = either (error.showErr) id $ parseFuthark fp contents
     pure ((dirFile </>) . (<.> "fut") <$> extractFromProgBase parsed)
+    where showErr (SyntaxError l str) = locStr l ++ ": " ++ T.unpack str
 
 -- | Get all transitive dependencies
 getAllFutDeps :: FilePath -> IO [FilePath]
