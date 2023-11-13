@@ -1,0 +1,2 @@
+package zlib
+  flags: -pkg-config +bundled-c-zlib
