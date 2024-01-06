@@ -50,7 +50,7 @@ extractFromDecBase (OpenDec d _)                  = extractFromModExpBase d
 extractFromDecBase (ModDec (ModBind _ _ _ m _ _)) = extractFromModExpBase m
 extractFromDecBase ValDec{}                       = []
 extractFromDecBase TypeDec{}                      = []
-extractFromDecBase SigDec{}                       = []
+extractFromDecBase ModTypeDec{}                   = []
 
 extractFromModExpBase :: ModExpBase f vn -> [FilePath]
 extractFromModExpBase (ModParens m _)       = extractFromModExpBase m

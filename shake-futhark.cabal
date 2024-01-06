@@ -27,7 +27,7 @@ library
     ghc-options:      -Wall
     build-depends:
         base >=4.3 && <5,
-        futhark >=0.15,
+        futhark >=0.25.10,
         shake -any,
         text -any,
         filepath -any,
